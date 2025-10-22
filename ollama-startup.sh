@@ -1,4 +1,5 @@
 #!/bin/sh
+# Copyright 2025 Deer_Canidae https://github.com/Deer-Canidae
 
 pull_models() {
   while read -r MODEL_LINE ; do

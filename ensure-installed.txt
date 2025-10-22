@@ -1,2 +1,4 @@
+# Copyright 2025 Deer_Canidae https://github.com/Deer-Canidae
+
 # lists models to download on ollama startup
 mistral:latest
