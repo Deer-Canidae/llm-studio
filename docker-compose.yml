@@ -1,0 +1,68 @@
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+      - "127.0.0.1:4000:8080"
+      - "[::1]:4000:8080"
+    volumes:
+      - open-webui:/app/backend/data
+    devices:
+      - nvidia.com/gpu=all
+    security_opt:
+      - label=disable
+    environment:
+      WEBUI_AUTH: False
+      OLLAMA_BASE_URL: "http://ollama:11434"
+    networks:
+      - llm-internal-net
+    depends_on: 
+      - ollama
+    restart: always
+
+  ollama:
+    ports:
+      - "127.0.0.1:11434:11434"
+      - "[::1]:11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    devices:
+      - nvidia.com/gpu=all
+    security_opt:
+      - label=disable
+    networks:
+      - llm-internal-net
+    build:
+      dockerfile_inline: |
+        FROM docker.io/ollama/ollama:latest
+
+        WORKDIR /root
+
+        COPY ./ollama-startup.sh .
+
+        RUN tr -d '\r' <ollama-startup.sh >ollama-startup-fixed.sh && \
+          mv ollama-startup-fixed.sh ollama-startup.sh && \
+          chmod 0555 ollama-startup.sh
+
+        COPY ./ensure-installed.txt .
+
+        RUN tr -d '\r' <ensure-installed.txt >ensure-installed-fixed.txt && \
+          mv ensure-installed-fixed.txt ensure-installed.txt && \
+          chmod 0444 ensure-installed.txt
+
+    entrypoint:
+      - /root/ollama-startup.sh
+    restart: always
+
+volumes:
+  open-webui:
+  ollama:
+
+networks:
+  llm-internal-net:
+
+configs:
+  ollama-entrypoint:
+    file: ./ollama-startup.sh
+  ollama-ensure-installed:
+    file: ./ensure-installed.txt
