@@ -7,8 +7,8 @@ services:
       - "[::1]:4000:8080"
     volumes:
       - open-webui:/app/backend/data
-    devices:
-      - nvidia.com/gpu=all
+    # devices:
+    #   - nvidia.com/gpu=all
     security_opt:
       - label=disable
     environment:
@@ -26,8 +26,8 @@ services:
       - "[::1]:11434:11434"
     volumes:
       - ollama:/root/.ollama
-    devices:
-      - nvidia.com/gpu=all
+    #devices:
+    #   - nvidia.com/gpu=all
     security_opt:
       - label=disable
     networks:
